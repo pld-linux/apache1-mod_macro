@@ -1,18 +1,18 @@
 %define		mod_name	macro
-%define 	apxs		/usr/sbin/apxs
+%define 	apxs		%{_sbindir}/apxs1
 Summary:	Apache module to allow macros in apache config files
 Summary(pl.UTF-8):	Moduł do apache pozwalający używać makr w konfiguracji
-Name:		apache-mod_%{mod_name}
-Version:	1.1.11
+Name:		apache1-mod_%{mod_name}
+Version:	1.1.2
 Release:	1
 License:	Apache
 Group:		Networking/Daemons/HTTP
 Source0:	http://www.cri.ensmp.fr/~coelho/mod_macro/mod_%{mod_name}-%{version}.tar.bz2
-# Source0-md5:	9ade3977c23ec566e5bcd6cd99145a9c
+# Source0-md5:	dc1e6785f07ee6760af3eda564969850
 URL:		http://www.cri.ensmp.fr/~coelho/mod_macro/
-BuildRequires:	apache-devel >= 2.0
-BuildRequires:	rpmbuild(macros) >= 1.268
-Requires:	apache(modules-api) = %apache_modules_api
+BuildRequires:	apache1-devel >= 1.3.33-2
+BuildRequires:	rpmbuild(macros) >= 1.228
+Requires:	apache1(EAPI)
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_pkglibdir	%(%{apxs} -q LIBEXECDIR 2>/dev/null)
@@ -34,7 +34,7 @@ Moduł do apache pozwalający używać makr w plikach konfiguracyjnych.
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_pkglibdir},%{_sysconfdir}}
 
-install -p .libs/mod_%{mod_name}.so $RPM_BUILD_ROOT%{_pkglibdir}
+install -p mod_%{mod_name}.so $RPM_BUILD_ROOT%{_pkglibdir}
 echo 'LoadModule %{mod_name}_module modules/mod_%{mod_name}.so' > \
 	$RPM_BUILD_ROOT%{_sysconfdir}/90_mod_%{mod_name}.conf
 
@@ -42,11 +42,11 @@ echo 'LoadModule %{mod_name}_module modules/mod_%{mod_name}.so' > \
 rm -rf $RPM_BUILD_ROOT
 
 %post
-%service -q httpd restart
+%service apache restart
 
 %postun
 if [ "$1" = "0" ]; then
-	%service -q httpd restart
+	%service -q apache restart
 fi
 
 %files
